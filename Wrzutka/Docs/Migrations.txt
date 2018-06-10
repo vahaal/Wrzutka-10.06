@@ -1,0 +1,15 @@
+﻿===========================================ApplicationDBContext===========================================================
+
+Enable-Migrations -ContextTypeName ApplicationDBContext -MigrationsDirectory Migrations\Identity
+
+add-migration -ConfigurationTypeName Wrzutka.Migrations.Identity.Configuration "InitialIdentity"
+
+update-database -ConfigurationTypeName Wrzutka.Migrations.Identity.Configuration
+
+===========================================WrzutkaDBContext===========================================================
+
+Enable-Migrations -ContextTypeName WrzutkaContext -MigrationsDirectory Migrations\Wrzutka
+
+add-migration -ConfigurationTypeName Wrzutka.Migrations.Wrzutka.Configuration "InitialCreate"
+
+update-database -ConfigurationTypeName Wrzutka.Migrations.Wrzutka.Configuration

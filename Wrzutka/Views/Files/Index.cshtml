@@ -1,0 +1,147 @@
+﻿@using Microsoft.AspNet.Identity;
+@model IEnumerable<Wrzutka.Models.Wrzutka.File>
+
+@{
+    ViewBag.Title = "Index";
+    List<int> RatingsValues = new List<int>() { 0, 1, 2, 3, 4, 5 };
+    string userID = User.Identity.GetUserId();
+    IEnumerable<SelectListItem> RatingsSelectList = RatingsValues.Select(x => new SelectListItem() { Text = x.ToString(), Value = x.ToString() });
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<p>
+    @Html.ActionLink("Generuj PDF", "GetPdf")
+</p>
+
+@using (Html.BeginForm())
+{
+    <nav div class="sortField">
+        <a href="#" class="toggle">Opcje sortowania</a>
+
+        <div class="form-horizontal">
+            <ul>
+                <div class="form-group form-group-sm">
+                    <div class="form-inline">
+                        <div class="col-md-8">
+                            Po ciągu znaków:
+                            @Html.TextBox("SearchString", null, new { @class = "form-control" })
+                            Od daty
+                            @Html.TextBox("start", null, new { @class = "form-control" })
+                            <input type="submit" value="Filtruj" />
+                        </div>
+                    </div>
+                </div>
+            </ul>
+        </div>
+
+    </nav>
+}
+
+<table class="table">
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.AuthorUserName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.FileName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.CreationTime)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Average)
+        </th>
+        <th>
+            Vote
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.Description)
+        </th>
+        <th></th>
+    </tr>
+
+    @foreach (var item in Model)
+    {
+
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.AuthorUserName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.FileName)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.CreationTime)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.Average)
+            </td>
+            <td>
+                @Html.DropDownList("ParticipantList" + item.FileID, RatingsSelectList)
+                <input type="button" value="Assign" onclick="AssignButtonClicked(this)" data-assigned-id="@item.FileID" />
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.ShortDescription)
+            </td>
+            <td>
+                @Html.ActionLink("Edit", "Edit", new { id = item.FileID }) |
+                @Html.ActionLink("Details", "Details", new { id = item.FileID }) |
+                @Html.ActionLink("Delete", "Delete", new { id = item.FileID })
+                @Html.ActionLink("Attachement", "DownloadNote", new { id = item.FileID }, new { @class = "btn btn-default" })
+            </td>
+        </tr>
+    }
+</table>
+
+
+<script src="~/Scripts/jquery-3.3.1.min.js" type="text/javascript"></script>
+<script src="~/Scripts/moment-with-locales.js" type="text/javascript"></script>
+<script src="~/Scripts/bootstrap.js" type="text/javascript"></script>
+<script src="~/Scripts/bootstrap-datetimepicker.js" type="text/javascript"></script>
+<link href="~/Content/bootstrap-datetimepicker.css" rel="stylesheet" type="text/css" />
+
+<script>
+                function AssignButtonClicked(elem) {
+                    var id = $(elem).data('assigned-id');
+                    var url = '@Url.Action("AddRating", "Files", new { rate = "-------", NoteID ="tttttttt"}, null)';
+                    url = url.replace("-------", $('#ParticipantList' + id).val());
+                    url = url.replace("tttttttt", id);
+                    url = url.replace("&amp;", "&")
+                    console.log(url);
+
+                    $.ajax({
+                        url: url, // comma here instead of semicolon
+                        success: function () {
+                            alert("Value Added");  // or any other indication if you want to show
+                        }
+
+                    });
+                    //window.location = url;
+    }
+</script>
+<script>
+    $.noConflict();
+    jQuery(document).ready(function ($) {
+        $(function () {
+            $('#start').datetimepicker(
+                {
+                    maxDate: Date.now(),
+                    format: "YYYY-MM-DD",
+                    locale: 'pl',
+                });
+        });
+    });
+
+</script>
+<script>
+    jQuery(document).ready(function ($) {
+        $("a.toggle").click(function () {
+            $(this).next('div').slideToggle(500);
+            $(this).toggleClass("open");
+        });
+    });
+</script>
